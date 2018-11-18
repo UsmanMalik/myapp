@@ -23,15 +23,49 @@
       console.log("already defined" + web3);
     } else {
       // Set the provider you want from Web3.providers
-      web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+      web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
       console.log("going to set the provider");
     }   
 
     web3.eth.defaultAccount = web3.eth.accounts[0]; // setting up default account
     var ClientContract = web3.eth.contract([{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"clientAccounts","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"clientExist","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_address","type":"address"},{"name":"_firstName","type":"string"},{"name":"_lastName","type":"string"},{"name":"_company","type":"string"}],"name":"setClient","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getClients","outputs":[{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"getClient","outputs":[{"name":"","type":"string"},{"name":"","type":"string"},{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"countClients","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_contractAddr","type":"address"},{"name":"_rating","type":"uint256"},{"name":"_comment","type":"string"},{"name":"_consultantAccount","type":"address"}],"name":"setConsultantReview","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"}],"name":"getConsultantReview","outputs":[{"name":"","type":"uint256"},{"name":"","type":"string"},{"name":"","type":"address"},{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}]);
-    var Client = ClientContract.at('0xc9eec4274d3b39c846c775eefe09cecd31fc7b3b');
+    var Client = ClientContract.at('0x6b3c4565f90efbdd8a06ec2f13982fa8c32f94fe');
     console.log(Client);
 
+//     Client.setClient(web3.eth.accounts[7],"Blue","Box", "Blue Box LLC"),function(err,result){
+//     if(!err){
+//         console.log(result)
+//     }
+// };
+
+  // Client.setClient(web3.eth.accounts[7],"Blue","Box", "Blue Box LLC").then(function(v) {console.log(v)});
+
+  //   Client.getClients().then(function (result) {
+  //     console.log(result);
+  // });
+
+  Client.getClients.call(function (err, res) {
+
+    if(!err){
+      console.log(res);
+    }
+  });
+
+
+
+  Client.setClient(web3.eth.accounts[7],"Blue","Box", "Blue Box LLC").call(function (err, res) {
+
+    if(!err){
+      console.log(res);
+    }
+  });
+
+//   Client.clientExist.call( ('jhjhj', result) => {
+//   if (!error) {
+//     console.log(result);
+//     // console.log(result.dna);
+//   }
+// }); // transaction object not needed
 
     
   </script>
