@@ -8,9 +8,6 @@
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
     <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
-
-
-
   </head>
 
   <body>
@@ -18,19 +15,82 @@
   
   <script>
   
+
+
+   // Initial setup 
+   var ClientContract = null;
+   var Client = null;
+   var ConsultantContract = null;
+   var Consultant = null;
+
+
+
+   // Contract and account addresses 
+   var ClientContractAddress = '0xe1c078466891f5b7e8c94f9dc49e0feb49a9d795';
+   var ClientABI = [{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"clientAccounts","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"clientExist","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_address","type":"address"},{"name":"_firstName","type":"string"},{"name":"_lastName","type":"string"},{"name":"_company","type":"string"}],"name":"setClient","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getClients","outputs":[{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"getClient","outputs":[{"name":"","type":"string"},{"name":"","type":"string"},{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"countClients","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_contractAddr","type":"address"},{"name":"_rating","type":"uint256"},{"name":"_comment","type":"string"},{"name":"_consultantAccount","type":"address"}],"name":"setConsultantReview","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"}],"name":"getConsultantReview","outputs":[{"name":"","type":"uint256"},{"name":"","type":"string"},{"name":"","type":"address"},{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}];
+   var ConsultantContractAddress = "0x147e57b7fa0e55c1618906f627ffd74024af7bb2"; 
+   var ConsultantABI = [{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"consultantAccounts","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"consultantExist","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_address","type":"address"},{"name":"_firstName","type":"string"},{"name":"_lastName","type":"string"}],"name":"setConsultant","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getConsultants","outputs":[{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"getConsultant","outputs":[{"name":"","type":"string"},{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"countConsultants","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_contractAddr","type":"address"},{"name":"_rating","type":"uint256"},{"name":"_comment","type":"string"},{"name":"_consultantAccount","type":"address"},{"name":"_clientAccount","type":"address"}],"name":"setClientReview","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"}],"name":"getClientReview","outputs":[{"name":"","type":"uint256"},{"name":"","type":"string"},{"name":"","type":"address"},{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}];
+
+
     if (typeof web3 !== 'undefined') {
       web3 = new Web3(web3.currentProvider);
-      console.log("already defined" + web3);
+      web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+
+      console.log("already defined" + web3.eth.accounts[0]);
     } else {
       // Set the provider you want from Web3.providers
-      web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
+      web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
       console.log("going to set the provider");
     }   
-
+    web3.personal.unlockAccount(web3.eth.accounts[0]);
     web3.eth.defaultAccount = web3.eth.accounts[0]; // setting up default account
-    var ClientContract = web3.eth.contract([{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"clientAccounts","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"clientExist","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_address","type":"address"},{"name":"_firstName","type":"string"},{"name":"_lastName","type":"string"},{"name":"_company","type":"string"}],"name":"setClient","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getClients","outputs":[{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"getClient","outputs":[{"name":"","type":"string"},{"name":"","type":"string"},{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"countClients","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_contractAddr","type":"address"},{"name":"_rating","type":"uint256"},{"name":"_comment","type":"string"},{"name":"_consultantAccount","type":"address"}],"name":"setConsultantReview","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"}],"name":"getConsultantReview","outputs":[{"name":"","type":"uint256"},{"name":"","type":"string"},{"name":"","type":"address"},{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}]);
-    var Client = ClientContract.at('0x6b3c4565f90efbdd8a06ec2f13982fa8c32f94fe');
-    console.log(Client);
+
+
+    console.log("default account: " + web3.eth.defaultAccount);
+    var ClientContract = web3.eth.contract(ClientABI);
+    var Client = ClientContract.at(ClientContractAddress);
+    ClientContract.eth.defaultAccount = web3.eth.accounts[0];
+    web3.personal.unlockAccount(ClientContract.eth.defaultAccount);
+    // console.dir("Client: " + JSON.stringify(Client));
+    console.dir(Client);
+
+
+window.addEventListener('load', async () => {
+    // Modern dapp browsers...
+    if (window.ethereum) {
+        window.web3 = new Web3(ethereum);
+        try {
+            // Request account access if needed
+            await ethereum.enable();
+            console.log("modern bro");
+            // Acccounts now exposed
+            // web3.eth.sendTransaction({/* ... */});
+        } catch (error) {
+            // User denied account access...
+            console.log("modern error");
+        }
+    }
+    // Legacy dapp browsers...
+    else if (window.web3) {
+        window.web3 = new Web3(web3.currentProvider);
+        console.log("Not so modern");
+        // Acccounts always exposed
+        // web3.eth.sendTransaction({/* ... */});
+    }
+    // Non-dapp browsers...
+    else {
+        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+    }
+});
+
+
+
+
+
+
+
+
+
 
 //     Client.setClient(web3.eth.accounts[7],"Blue","Box", "Blue Box LLC"),function(err,result){
 //     if(!err){
@@ -44,21 +104,40 @@
   //     console.log(result);
   // });
 
-  Client.getClients.call(function (err, res) {
+  // Client.getClients.call(function (err, res) {
 
-    if(!err){
-      console.log(res);
-    }
-  });
+  //   if(!err){
+  //     console.log("array: o:  "+res);
+  //   }
+  // });
+
+  // Client.call.getClients();
+
+
+// Client.getClient(web3.eth.accounts[7]).call(function (err, res) {
+
+//     if(!err){
+//       console.log("get client:  "+res);
+//     }
+//   });
 
 
 
-  Client.setClient(web3.eth.accounts[7],"Blue","Box", "Blue Box LLC").call(function (err, res) {
+  // Client.setClient(web3.eth.accounts[7],"Blue","Box", "Blue Box LLC").call(function (err, res) {
 
-    if(!err){
-      console.log(res);
-    }
-  });
+  //   if(!err){
+  //     console.log(res);
+  //   }
+  // }); 
+
+
+  var result = Client.setClient(web3.eth.accounts[7],"Namrah","Waheed", "Blue Box LLC", {gas: 200000});
+
+  console.log("The result is: " + result);
+
+  console.log(Client.getClient(web3.eth.accounts[7]));
+  
+  // ClientContract.deployed().then(function(contractInstance) { contractInstance.getClient(web3.eth.accounts[7]).then(function(v) {console.log(v)})})
 
 //   Client.clientExist.call( ('jhjhj', result) => {
 //   if (!error) {
