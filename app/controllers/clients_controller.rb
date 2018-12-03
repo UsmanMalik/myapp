@@ -7,6 +7,8 @@ class ClientsController < ApplicationController
     @clients = Client.all
   end
 
+  def client_ethereum_test
+  end
   # GET /clients/1
   # GET /clients/1.json
   def show

@@ -16,6 +16,12 @@
   <script>
   
 
+  /* 
+  
+    Note: Look into Async finctions and see how they are going to affect the whole process. 
+
+  */
+
 
    // Initial setup 
    var ClientContract = null;
@@ -24,64 +30,78 @@
    var Consultant = null;
 
 
-
-   // Contract and account addresses 
-   var ClientContractAddress = '0xe1c078466891f5b7e8c94f9dc49e0feb49a9d795';
-   var ClientABI = [{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"clientAccounts","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"clientExist","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_address","type":"address"},{"name":"_firstName","type":"string"},{"name":"_lastName","type":"string"},{"name":"_company","type":"string"}],"name":"setClient","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getClients","outputs":[{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"getClient","outputs":[{"name":"","type":"string"},{"name":"","type":"string"},{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"countClients","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_contractAddr","type":"address"},{"name":"_rating","type":"uint256"},{"name":"_comment","type":"string"},{"name":"_consultantAccount","type":"address"}],"name":"setConsultantReview","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"}],"name":"getConsultantReview","outputs":[{"name":"","type":"uint256"},{"name":"","type":"string"},{"name":"","type":"address"},{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}];
+   // Contract and account addresses & probably make them constant
+   var ClientContractAddress = '0xff33adeeee4d4ff2bb06dea90ad9545b6b5bfac9';
    var ConsultantContractAddress = "0x147e57b7fa0e55c1618906f627ffd74024af7bb2"; 
+   var ConsultantReviewContractAddress = "0x745e434d2e55a702ea3e181a83f7e27611c557cf";
+   var ClientReviewContractAddress = "0x15cf131edfd41beee43ac078d896975ee3b7a419";
+
+   var ClientABI = [{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"clientAccounts","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"clientExist","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_address","type":"address"},{"name":"_firstName","type":"string"},{"name":"_lastName","type":"string"},{"name":"_company","type":"string"}],"name":"setClient","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getClients","outputs":[{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"getClient","outputs":[{"name":"","type":"string"},{"name":"","type":"string"},{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"countClients","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_contractAddr","type":"address"},{"name":"_rating","type":"uint256"},{"name":"_comment","type":"string"},{"name":"_consultantAccount","type":"address"}],"name":"setConsultantReview","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"}],"name":"getConsultantReview","outputs":[{"name":"","type":"uint256"},{"name":"","type":"string"},{"name":"","type":"address"},{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}];
    var ConsultantABI = [{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"consultantAccounts","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"consultantExist","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_address","type":"address"},{"name":"_firstName","type":"string"},{"name":"_lastName","type":"string"}],"name":"setConsultant","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getConsultants","outputs":[{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"getConsultant","outputs":[{"name":"","type":"string"},{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"countConsultants","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_contractAddr","type":"address"},{"name":"_rating","type":"uint256"},{"name":"_comment","type":"string"},{"name":"_consultantAccount","type":"address"},{"name":"_clientAccount","type":"address"}],"name":"setClientReview","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"}],"name":"getClientReview","outputs":[{"name":"","type":"uint256"},{"name":"","type":"string"},{"name":"","type":"address"},{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}];
+   var ConsultantReviewABI = [{"constant":true,"inputs":[],"name":"testNumber","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"clientAccounts","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"reviewsArray","outputs":[{"name":"rating","type":"uint256"},{"name":"comment","type":"string"},{"name":"clientAccount","type":"address"},{"name":"consultantAccount","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"constant":false,"inputs":[{"name":"_testNumber","type":"uint256"}],"name":"setTestNumber","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getTestNumber","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_rating","type":"uint256"},{"name":"_comment","type":"string"},{"name":"_consultantAccount","type":"address"}],"name":"setReview","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getReview","outputs":[{"name":"","type":"uint256"},{"name":"","type":"string"},{"name":"","type":"address"},{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalReviews","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getClientAccounts","outputs":[{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"}];
+   var ClientReviewABI = [{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"consultantAccounts","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"reviewsArray","outputs":[{"name":"rating","type":"uint256"},{"name":"comment","type":"string"},{"name":"consultantAccount","type":"address"},{"name":"clientAccount","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"constant":false,"inputs":[{"name":"_rating","type":"uint256"},{"name":"_comment","type":"string"},{"name":"_consultantAccount","type":"address"},{"name":"_clientAccount","type":"address"}],"name":"setReview","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getReview","outputs":[{"name":"","type":"uint256"},{"name":"","type":"string"},{"name":"","type":"address"},{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalReviews","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getConsultantAccounts","outputs":[{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"}];
+
+  // Default user(admin account)
+  var defaultAdminAccount = ''; // This account will be used to deploy code 
+
 
 
     if (typeof web3 !== 'undefined') {
       web3 = new Web3(web3.currentProvider);
       web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+      defaultAdminAccount = web3.eth.coinbase;
+      initializeEthereumContarcts();
 
-      console.log("already defined" + web3.eth.accounts[0]);
+
     } else {
       // Set the provider you want from Web3.providers
       web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+      defaultAdminAccount = web3.eth.coinbase;
+      initializeEthereumContarcts();
       console.log("going to set the provider");
     }   
-    web3.personal.unlockAccount(web3.eth.accounts[0]);
-    web3.eth.defaultAccount = web3.eth.accounts[0]; // setting up default account
+    
 
+    function initializeEthereumContarcts(){
+      console.log("initializeEthereumContarcts: " + defaultAdminAccount);
+      web3.personal.unlockAccount(defaultAdminAccount);
+      web3.eth.defaultAccount = defaultAdminAccount; // setting up default account
 
-    console.log("default account: " + web3.eth.defaultAccount);
-    var ClientContract = web3.eth.contract(ClientABI);
-    var Client = ClientContract.at(ClientContractAddress);
-    ClientContract.eth.defaultAccount = web3.eth.accounts[0];
-    web3.personal.unlockAccount(ClientContract.eth.defaultAccount);
-    // console.dir("Client: " + JSON.stringify(Client));
-    console.dir(Client);
+      ClientContract = web3.eth.contract(ClientABI);
+      Client = ClientContract.at(ClientContractAddress);
+      ClientContract.eth.defaultAccount = defaultAdminAccount;
+      web3.personal.unlockAccount(ClientContract.eth.defaultAccount);
+      // console.dir("Client: " + JSON.stringify(Client));
+      console.dir(Client);
 
-
-window.addEventListener('load', async () => {
-    // Modern dapp browsers...
-    if (window.ethereum) {
-        window.web3 = new Web3(ethereum);
-        try {
-            // Request account access if needed
-            await ethereum.enable();
-            console.log("modern bro");
-            // Acccounts now exposed
-            // web3.eth.sendTransaction({/* ... */});
-        } catch (error) {
-            // User denied account access...
-            console.log("modern error");
-        }
     }
-    // Legacy dapp browsers...
-    else if (window.web3) {
-        window.web3 = new Web3(web3.currentProvider);
-        console.log("Not so modern");
-        // Acccounts always exposed
-        // web3.eth.sendTransaction({/* ... */});
+
+
+
+    function submitConsultantReviewToBlockchain(){
+        console.log("consultant review from client");
+        var consultant_address = document.getElementById("consultant_address").value;
+        var consultant_rating = document.getElementById("consultant_rating").value;
+        var consultant_review = document.getElementById("consultant_review").value;
+        
+        var first_name = "teeku";
+        var last_nane = "khan";
+        var company = "Train of Thought"
+
+        console.log("addr: " + consultant_address + "   rating: " + consultant_rating + "  review: " + consultant_review);
+        var result = Client.setClient(web3.eth.accounts[7],first_name,last_nane, company, {gas: 200000});
+
+        console.log("The result is: " + result);
+        console.log(Client.getClient(web3.eth.accounts[7]));
+        var consultant_review = document.getElementById("consultant_review").value;
+        var consultantReviewByClientResult = Client.setConsultantReview("0x745e434d2e55a702ea3e181a83f7e27611c557cf",consultant_rating,consultant_address, {gas: 200000});
+        console.log("consultantReviewContractAddress: " + consultantReviewByClientResult);
+        console.log(Client.getConsultantReview('0x745e434d2e55a702ea3e181a83f7e27611c557cf'));
+        main();
+
+        return false;
     }
-    // Non-dapp browsers...
-    else {
-        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
-    }
-});
+
 
 
 
@@ -130,12 +150,25 @@ window.addEventListener('load', async () => {
   //   }
   // }); 
 
+// //  ************
+//   var result = Client.setClient(web3.eth.accounts[7],"Namrah","Waheed", "Blue Box LLC", {gas: 200000});
 
-  var result = Client.setClient(web3.eth.accounts[7],"Namrah","Waheed", "Blue Box LLC", {gas: 200000});
+//   console.log("The result is: " + result);
 
-  console.log("The result is: " + result);
+//   console.log(Client.getClient(web3.eth.accounts[7]));
 
-  console.log(Client.getClient(web3.eth.accounts[7]));
+//   var consultantReviewByClientResult = Client.setConsultantReview("0x745e434d2e55a702ea3e181a83f7e27611c557cf",20,"nomi",web3.eth.accounts[3], {gas: 200000});
+
+//   console.log("consultantReviewContractAddress: " + consultantReviewByClientResult);
+
+//   console.log(Client.getConsultantReview('0x745e434d2e55a702ea3e181a83f7e27611c557cf'));
+  //ClientContract.deployed().then(function(contractInstance) { contractInstance.getConsultantReview('0x745e434d2e55a702ea3e181a83f7e27611c557cf').then(function(v) {console.log(v)})})
+
+// going to give review
+
+// ClientContract.deployed().then(function(contractInstance) { contractInstance.setConsultantReview('0x6ed0dc7405602c58b174d6b508f48c42ed774f12',20,"meow",web3.eth.accounts[3]).then(function(v) {console.log(v)})})
+
+//   ***********
   
   // ClientContract.deployed().then(function(contractInstance) { contractInstance.getClient(web3.eth.accounts[7]).then(function(v) {console.log(v)})})
 
@@ -146,11 +179,76 @@ window.addEventListener('load', async () => {
 //   }
 // }); // transaction object not needed
 
+
+// window.addEventListener('load', async () => {
+//     // Modern dapp browsers...
+//     if (window.ethereum) {
+//         // window.web3 = new Web3(ethereum); // I am not sure how this works
+//         window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+//         try {
+//             // Request account access if needed
+//             await ethereum.enable();
+//             console.log("try modern dapp initialize");
+//             web3.personal.unlockAccount(web3.eth.coinbase);
+//             web3.eth.defaultAccount = web3.eth.coinbase; // setting up default account
+
+//             console.log("default account: " + web3.eth.defaultAccount);
+//             var ClientContract = web3.eth.contract(ClientABI);
+//             var Client = ClientContract.at(ClientContractAddress);
+//             ClientContract.eth.defaultAccount = web3.eth.coinbase;
+//             web3.personal.unlockAccount(ClientContract.eth.defaultAccount);
+//             // console.dir("Client: " + JSON.stringify(Client));
+//             console.dir(Client);
+
+//             // Acccounts now exposed
+//             // web3.eth.sendTransaction({/* ... */});
+//         } catch (error) {
+//             // User denied account access...
+//             console.log("catch modern error" + error);
+//         }
+//     }
+//     // Legacy dapp browsers...
+//     else if (window.web3) {
+//         // window.web3 = new Web3(web3.currentProvider);
+//        web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));       
+//         console.log("Legacy dapp browser");
+//         // Acccounts always exposed
+//         // web3.eth.sendTransaction({/* ... */});
+//     }
+//     // Non-dapp browsers...
+//     else {
+//         console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+//     }
+// });
+
+
+async function main() {
+    console.time("Slept for")
+    await sleep(3000)
+    console.timeEnd("Slept for")
+}
+
     
   </script>
 
 
 
     <%= yield %>
+    <div>
+        <form method="#" onsubmit="return submitConsultantReviewToBlockchain();">
+            <div>
+                <label> Consultant Address</label>
+                <input type="text" id="consultant_address" /> <br />
+                <label> Consultant Rating </label>
+                <input type="text" id="consultant_rating" /> <br />
+                <label> Consultant review text </label>
+                <input type="text" id="consultant_review"> <br />
+
+                <input type="submit">
+
+            </div>
+        </form>
+    </div>
+
   </body>
 </html>

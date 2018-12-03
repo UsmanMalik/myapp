@@ -1,0 +1,33 @@
+Hello Client Page
+
+
+<div>
+    <form method="#" onsubmit="return submitConsultantReviewToBlockchain();">
+        <div>
+            <label> Consultant Address</label>
+            <input type="text" id="consultant_address" /> <br />
+            <label> Consultant Rating </label>
+            <input type="text" id="consultant_rating" /> <br />
+            <label> Consultant review text </label>
+            <input type="text" id="consultant_review"> <br />
+
+            <input type="submit" onClick="submitConsultantReviewToBlockchain();">
+
+        </div>
+    </form>
+</div>
+
+
+<script type="text/javascript">
+    function submitConsultantReviewToBlockchain(){
+        console.log("consultant review from client");
+        var consultant_address = document.getElementById("consultant_address").value;
+        var consultant_rating = document.getElementById("consultant_rating").value;
+        var consultant_review = document.getElementById("consultant_review").value;
+
+        console.log("addr: " + consultant_address + "   rating: " + consultant_rating + "  review: " + consultant_review);
+
+        return false;
+    }
+
+</script>

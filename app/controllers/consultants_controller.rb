@@ -7,6 +7,9 @@ class ConsultantsController < ApplicationController
     @consultants = Consultant.all
   end
 
+  def consultant_ethereum_test
+  end
+  
   # GET /consultants/1
   # GET /consultants/1.json
   def show
