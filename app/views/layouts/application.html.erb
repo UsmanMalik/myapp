@@ -79,7 +79,7 @@
 
 
     function submitConsultantReviewToBlockchain(){
-        console.log("consultant review from client");
+        alert("consultant review from client");
         var consultant_address = document.getElementById("consultant_address").value;
         var consultant_rating = document.getElementById("consultant_rating").value;
         var consultant_review = document.getElementById("consultant_review").value;
@@ -88,16 +88,22 @@
         var last_nane = "khan";
         var company = "Train of Thought"
 
-        console.log("addr: " + consultant_address + "   rating: " + consultant_rating + "  review: " + consultant_review);
+        alert("addr: " + consultant_address + "   rating: " + consultant_rating + "  review: " + consultant_review);
+        
         var result = Client.setClient(web3.eth.accounts[7],first_name,last_nane, company, {gas: 200000});
 
-        console.log("The result is: " + result);
-        console.log(Client.getClient(web3.eth.accounts[7]));
-        var consultant_review = document.getElementById("consultant_review").value;
-        var consultantReviewByClientResult = Client.setConsultantReview("0x745e434d2e55a702ea3e181a83f7e27611c557cf",consultant_rating,consultant_address, {gas: 200000});
-        console.log("consultantReviewContractAddress: " + consultantReviewByClientResult);
-        console.log(Client.getConsultantReview('0x745e434d2e55a702ea3e181a83f7e27611c557cf'));
-        main();
+        alert("The result is: " + result);
+        alert(Client.getClient(web3.eth.accounts[7]));
+
+        try {
+
+            var consultantReviewByClientResult = Client.setConsultantReview('0x745e434d2e55a702ea3e181a83f7e27611c557cf',consultant_rating, consultant_review, web3.eth.accounts[3], {gas: 200000});
+            alert("consultantReviewByClientResult:  " + consultantReviewByClientResult);
+            alert(Client.getConsultantReview('0x745e434d2e55a702ea3e181a83f7e27611c557cf'));
+        }
+        catch(err) {
+            console.log("error: " + err);
+        }
 
         return false;
     }
@@ -221,14 +227,6 @@
 //     }
 // });
 
-
-async function main() {
-    console.time("Slept for")
-    await sleep(3000)
-    console.timeEnd("Slept for")
-}
-
-    
   </script>
 
 
