@@ -4,10 +4,52 @@
     <title>Myapp</title>
     <%= csrf_meta_tags %>
 
-    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
-    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.js"
+      integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+      crossorigin="anonymous"></script>
+
+    <style type="text/css">
+
+        body {
+            background-color:#F0F0F0;
+            padding: 2em;
+            font-family: 'Raleway','Source Sans Pro', 'Arial';
+        }
+        .container {
+            width: 50%;
+            margin: 0 auto;
+        }
+        label {
+            display:block;
+            margin-bottom:10px;
+        }
+        input {
+            padding:10px;
+            width: 50%;
+            margin-bottom: 1em;
+        }
+        button {
+            margin: 2em 0;
+            padding: 1em 4em;
+            display:block;
+        }
+
+        #instructor {
+            padding:1em;
+            background-color:#fff;
+            margin: 1em 0;
+        }
+
+        #loader {
+            width: 100px;
+            display:none;
+        }
+    </style>
+
+
   </head>
 
   <body>
@@ -28,6 +70,7 @@
    var Client = null;
    var ConsultantContract = null;
    var Consultant = null;
+   var ClientEvent = null;
 
 
    // Contract and account addresses & probably make them constant
@@ -36,7 +79,7 @@
    var ConsultantReviewContractAddress = "0x5e48aab8a867a8250bb41506069896707336febd";
    var ClientReviewContractAddress = "0x38563ac0aabb090b306d9db879c4df7317fa98a8";
 
-   var ClientABI = [{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"clientAccounts","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"clientExist","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"clientDoesNotExist","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_address","type":"address"},{"name":"_firstName","type":"string"},{"name":"_lastName","type":"string"},{"name":"_company","type":"string"}],"name":"setClient","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getClients","outputs":[{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"getClient","outputs":[{"name":"","type":"string"},{"name":"","type":"string"},{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"countClients","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_contractAddr","type":"address"},{"name":"_rating","type":"uint256"},{"name":"_comment","type":"bytes32"},{"name":"_consultantAccount","type":"address"},{"name":"_clientAccount","type":"address"}],"name":"setConsultantReview","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"}],"name":"getConsultantReview","outputs":[{"name":"","type":"uint256"},{"name":"","type":"bytes32"},{"name":"","type":"address"},{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"},{"name":"_clientAccount","type":"address"}],"name":"getConsultantsReviews","outputs":[{"name":"","type":"uint256[]"},{"name":"","type":"bytes32[20]"},{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"},{"name":"_consultantAccount","type":"address"},{"name":"_clientAccount","type":"address"}],"name":"getConsultantReviews","outputs":[{"name":"","type":"uint256[]"},{"name":"","type":"bytes32[20]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"},{"name":"_clientAccount","type":"address"}],"name":"getClientFirstReview","outputs":[{"name":"","type":"uint256"},{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"}];
+   var ClientABI = [{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"clientAccounts","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"firstName","type":"string"},{"indexed":false,"name":"lastName","type":"string"},{"indexed":false,"name":"company","type":"string"},{"indexed":false,"name":"account","type":"address"}],"name":"ClientEvent","type":"event"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"clientExist","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"clientDoesNotExist","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_address","type":"address"},{"name":"_firstName","type":"string"},{"name":"_lastName","type":"string"},{"name":"_company","type":"string"}],"name":"setClient","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getClients","outputs":[{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"getClient","outputs":[{"name":"","type":"string"},{"name":"","type":"string"},{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"countClients","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_contractAddr","type":"address"},{"name":"_rating","type":"uint256"},{"name":"_comment","type":"bytes32"},{"name":"_consultantAccount","type":"address"},{"name":"_clientAccount","type":"address"}],"name":"setConsultantReview","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"}],"name":"getConsultantReview","outputs":[{"name":"","type":"uint256"},{"name":"","type":"bytes32"},{"name":"","type":"address"},{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"},{"name":"_clientAccount","type":"address"}],"name":"getConsultantsReviews","outputs":[{"name":"","type":"uint256[]"},{"name":"","type":"bytes32[20]"},{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"},{"name":"_consultantAccount","type":"address"},{"name":"_clientAccount","type":"address"}],"name":"getConsultantReviews","outputs":[{"name":"","type":"uint256[]"},{"name":"","type":"bytes32[20]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"},{"name":"_clientAccount","type":"address"}],"name":"getClientFirstReview","outputs":[{"name":"","type":"uint256"},{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"}];
 
    var ConsultantABI = [{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"consultantAccounts","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"consultantExist","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_address","type":"address"},{"name":"_firstName","type":"string"},{"name":"_lastName","type":"string"}],"name":"setConsultant","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getConsultants","outputs":[{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"getConsultant","outputs":[{"name":"","type":"string"},{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"countConsultants","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_contractAddr","type":"address"},{"name":"_rating","type":"uint256"},{"name":"_comment","type":"string"},{"name":"_consultantAccount","type":"address"},{"name":"_clientAccount","type":"address"}],"name":"setClientReview","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"}],"name":"getClientReview","outputs":[{"name":"","type":"uint256"},{"name":"","type":"string"},{"name":"","type":"address"},{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}];
 
@@ -77,8 +120,19 @@
       // console.dir("Client: " + JSON.stringify(Client));
       console.dir(Client);
 
+      ClientEvent = Client.ClientEvent();
+
+
     }
 
+
+   $("#setClientButton").click(function() {
+        $("#loader").show();
+        console.log("going to set the client on bc");
+       // Coursetro.setInstructor($("#name").val(), $("#age").val());
+       Client.setClient($("#firstName").val(),$("#lastName").val(),$("#company").val(),web3.eth.accounts[6], {from: web3.eth.accounts[0],gas: 200000});
+       console.log("function is been called already");
+   });
 
 
     function submitConsultantReviewToBlockchain(){
@@ -104,7 +158,7 @@
             // alert("consultantReviewByClientResult:  " + consultantReviewByClientResult);
             // alert(Client.getConsultantReview('0xde1f93ec956b880e1ea4923a1e201daa16946637'));
 
-        alert("get consultant reviews: "+ Client.getClientFirstReview('0xcf4f5a678a1fcdd92e332d66661f1deafad4d34f',web3.eth.accounts[7]));
+            alert("get consultant reviews: "+ Client.getClientFirstReview('0xcf4f5a678a1fcdd92e332d66661f1deafad4d34f',web3.eth.accounts[7]));
 
 
 
@@ -116,24 +170,6 @@
 
         return false;
     }
-
-
-
-
-
-
-
-       // Coursetro.getInstructor(function(error, result) {
-       //     if (!error) {
-       //         $("#instructor").html(result[0]+' ('+result[1]+' years old)');
-       //     } else
-       //          console.log(error);
-       // });
-
-       // $("#button").click(function() {
-       //     $("#loader").show();
-       //     Coursetro.setInstructor($("#name").val(), $("#age").val());
-       // });
 
 
 
@@ -247,11 +283,70 @@
 //     }
 // });
 
+
+
+    ClientEvent.watch(function(error, result) {
+               if (!error) {
+                   $("#loader").hide();
+                   $("#instructor").html(result.args.firstName + ' (' + result.args.lastName + ' years old)');
+               } else {
+                    $("#loader").hide();
+               }
+           });
+
+       $("#setClientButton").click(function() {
+            $("#loader").show();
+            console.log("going to set the client on bc" + "#firstName").val().toString()+ "   "+ $("#lastName").val()$("#company").val() );
+           // Coursetro.setInstructor($("#name").val(), $("#age").val());
+
+           Client.setClient($("#firstName").val().toString(),$("#lastName").val(),$("#company").val(),web3.eth.accounts[6], {from: web3.eth.accounts[0],gas: 200000});
+           console.log("function is been called already");
+       });
+
+       $('#bitto').click(function(){
+          alert("Hello World");
+          console.log("Button clicked");
+       });
+
+
   </script>
 
 
 
     <%= yield %>
+
+    <div class="container">
+
+      <h2 id="instructor">:P</h2>
+      <img id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif">
+
+        <h1>Client Set</h1>
+
+        <h2 id="instructor"></h2>
+        <img id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif">
+
+        <label for="name" class="col-lg-2 control-label">First Name</label>
+        <input id="firstName" type="text">
+
+        <label for="name" class="col-lg-2 control-label">Last Name</label>
+        <input id="lastName" type="text">
+
+        <label for="name" class="col-lg-2 control-label">Company Name</label>
+        <input id="company" type="text">
+
+        <label for="name" class="col-lg-2 control-label">Address</label>
+        <input id="address" type="text">
+
+        
+
+        <button id="setClientButton">Update Instructor</button>
+
+    </div>
+
+    
+    <button id="bitto">Click</button>
+
+
     <div>
         <form method="#" onsubmit="return submitConsultantReviewToBlockchain();">
             <div>
@@ -268,5 +363,10 @@
         </form>
     </div>
 
+
+
+
   </body>
+
+
 </html>
