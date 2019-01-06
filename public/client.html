@@ -225,8 +225,6 @@
          }
      });
 
-
-
     ClientEvent.watch(function(error, result) {
 
 	       if (!error) {
@@ -253,7 +251,7 @@
 
      $("#setClientButton").click(function() {
           $("#loader").show();
-		console.log("going to set the client on bc" + $("#firstName").val().toString()+ "   "+ $("#lastName").val()+ "   "+ $("#company").val() ); 
+		      console.log("going to set the client on bc" + $("#firstName").val().toString()+ "   "+ $("#lastName").val()+ "   "+ $("#company").val() ); 
          Client.setClient($("#firstName").val(),$("#lastName").val(),$("#company").val(), {gas: 200000});
          console.log("function is been called already");
      });
@@ -269,13 +267,15 @@
 
 
     $("#fetchConsultantReviews").click(function(){
-      console.log("fetchConsultantReviews: " + $("#consultant_review_address").val());
-      //getConsultantReviews(address _contractAddr, address _consultantAccount)   
-      var result = Client.getConsultantReviews(ConsultantReviewContractAddress, $("#consultant_review_address").val(), {gas: 200000});
-      
-      $("#consultant_reviews").html(result);
+        console.log("fetchConsultantReviews: " + $("#consultant_review_address").val());
+        //getConsultantReviews(address _contractAddr, address _consultantAccount)   
+        var result = Client.getConsultantReviews(ConsultantReviewContractAddress, $("#consultant_review_address").val(), {gas: 200000});
+        
+        $("#consultant_reviews").html(result); // need to loop through the content and display results 
 
-    });
+        
+
+      });
          
 
 
