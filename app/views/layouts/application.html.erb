@@ -51,6 +51,14 @@
 
     <div class="container">
 
+      <div id="get_client">
+
+        <p id="client_first_name"></p>
+        <p id="client_last_name"></p>    
+        <p id="client_company"></p>            
+
+      </div>
+
       <h2 id="instructor">:P</h2>
       <img id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif">
 
@@ -82,19 +90,34 @@
 
 
     <div>
-        <form method="#" onsubmit="return submitConsultantReviewToBlockchain();">
-            <div>
-                <label> Consultant Address</label>
-                <input type="text" id="consultant_address" /> <br />
-                <label> Consultant Rating </label>
-                <input type="text" id="consultant_rating" /> <br />
-                <label> Consultant review text </label>
-                <input type="text" id="consultant_review"> <br />
+      <div>
+          <label> Consultant Address</label>
+          <input type="text" id="consultant_address" /> <br />
+          <label> Consultant Rating </label>
+          <input type="text" id="consultant_rating" /> <br />
+          <label> Consultant review text </label>
+          <input type="text" id="consultant_review"> <br />
 
-                <input type="submit">
+        <button id="setConsultantReview">Add Review</button>
 
-            </div>
-        </form>
+      </div>
+    </div>
+
+    <div>
+      <div>Get consultant reviews</div>
+      <div class="contant_reviews_div">
+        <div id="consultant_reviews">
+          <button id="getConsultantReviews">Get Reviews</button>
+          <p id="consultantReviewsContent">no content yet</p>
+        </div>
+      </div>
+
+      <div>
+        <div id="consultant_reviews">
+          <button id="getConsultantsReviews">Get consultants Reviews</button>
+          <p id="consultantsReviewsContent">no content yet - consultants reviews<br /></p>
+        </div>
+      </div>
     </div>
 
 
@@ -110,11 +133,12 @@
   
   <script>
   
-  alert("Hello World");
-
   $('#bitto').click(function(){
       alert("Hello World");
       console.log("Button clicked");
+
+      var content = Client.getClient();
+      console.log("getting client name and content: " + content);
    });
 
 
@@ -131,12 +155,14 @@
    var ConsultantContract = null;
    var Consultant = null;
    var ClientEvent = null;
+   var ClientAlreadyExistsEvent = null;
+ 
 
 
    // Contract and account addresses & probably make them constant
-   var ClientContractAddress = '0x6b3c4565f90efbdd8a06ec2f13982fa8c32f94fe';
+   var ClientContractAddress = '0x0fcd08e63d4bdfaa2355a7892af0d8d74d8a4970';
    var ConsultantContractAddress = "0x10675c9d40238d4b4fb0b32582bb77b41b0ab8ef"; 
-   var ConsultantReviewContractAddress = "0x5e48aab8a867a8250bb41506069896707336febd";
+   var ConsultantReviewContractAddress = "0xcf4f5a678a1fcdd92e332d66661f1deafad4d34f";
    var ClientReviewContractAddress = "0x38563ac0aabb090b306d9db879c4df7317fa98a8";
 
    var ClientABI = [{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"clientAccounts","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"firstName","type":"string"},{"indexed":false,"name":"lastName","type":"string"},{"indexed":false,"name":"company","type":"string"},{"indexed":false,"name":"account","type":"address"}],"name":"ClientEvent","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"message","type":"string"}],"name":"ClientAlreadyExistsEvent","type":"event"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"clientExist","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"clientDoesNotExist","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_firstName","type":"string"},{"name":"_lastName","type":"string"},{"name":"_company","type":"string"}],"name":"setClient","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getClients","outputs":[{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getClient","outputs":[{"name":"","type":"string"},{"name":"","type":"string"},{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"countClients","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_contractAddr","type":"address"},{"name":"_rating","type":"uint256"},{"name":"_comment","type":"bytes32"},{"name":"_consultantAccount","type":"address"}],"name":"setConsultantReview","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"}],"name":"getConsultantReview","outputs":[{"name":"","type":"uint256"},{"name":"","type":"bytes32"},{"name":"","type":"address"},{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"}],"name":"getConsultantsReviews","outputs":[{"name":"","type":"uint256[]"},{"name":"","type":"bytes32[20]"},{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"},{"name":"_consultantAccount","type":"address"}],"name":"getConsultantReviews","outputs":[{"name":"","type":"uint256[]"},{"name":"","type":"bytes32[20]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"}],"name":"getClientFirstReview","outputs":[{"name":"","type":"uint256"},{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"}];
@@ -181,42 +207,69 @@
       console.dir(Client);
 
       ClientEvent = Client.ClientEvent();
-
+      ClientAlreadyExistsEvent = Client.ClientAlreadyExistsEvent();
 
     }
-
-
-   // $("#setClientButton").click(function() {
-   //      $("#loader").show();
-   //      console.log("going to set the client on bc");
-   //     // Coursetro.setInstructor($("#name").val(), $("#age").val());
-   //     Client.setClient($("#firstName").val(),$("#lastName").val(),$("#company").val(),web3.eth.accounts[6], {from: web3.eth.accounts[0],gas: 200000});
-   //     console.log("function is been called already");
-   // });
-
-
-    function submitConsultantReviewToBlockchain(){
-        alert("consultant review from client");
-        var consultant_address = document.getElementById("consultant_address").value;
-        var consultant_rating = document.getElementById("consultant_rating").value;
-        var consultant_review = document.getElementById("consultant_review").value;
-        
-        var first_name = "teeku";
-        var last_nane = "khan";
-        var company = "Train of Thought";
-
-        try {
-
-            alert("get consultant reviews: "+ Client.getClientFirstReview('0xcf4f5a678a1fcdd92e332d66661f1deafad4d34f',web3.eth.accounts[7]));
-
-        }
-        catch(err) {
-            console.log("error: " + err);
-        }
-
-        return false;
+    
+    setTimeout(getClientNameAndAccount, 7000);
+    
+    function getClientNameAndAccount(){
+      var content = Client.getClient();
+      console.log("getting client name and content: " + content);
+      $("#client_first_name").text(content[0]);
+      $("#client_last_name").text(content[1]);
+      $("#client_company").text(content[2]);
     }
 
+     $("#setClientButton").click(function() {
+          $("#loader").show();
+          console.log("going to set the client on bc" + $("#firstName").val().toString() + "   "+ $("#lastName").val().toString() + "   " + $("#company").val().toString());
+
+         Client.setClient($("#firstName").val().toString(),$("#lastName").val(),$("#company").val(), {gas: 200000});
+         console.log("function is been called already");
+     });
+
+     $('#setConsultantReview').click(function(){
+        alert('going to set consultant review ' + $('#consultant_address').val() + "  " + $('#consultant_rating').val() + " " + $('#consultant_review').val());
+
+        var transaction = Client.setConsultantReview(ConsultantReviewContractAddress,$('#consultant_rating').val(), $('#consultant_review').val(), $('#consultant_address').val(),{gas: 4712388});
+        console.log("transaction: " + transaction);
+
+     });
+
+     $('#getConsultantReviews').click(function(){
+        alert("going to get consultant reviews");
+        var consultantReviews = Client.getConsultantReviews(ConsultantReviewContractAddress, $('#consultant_address').val(),{gas: 4712388});
+        console.log(consultantReviews[0].length);
+        for(var i=0; i<20; i++){
+          if (consultantReviews[1][i] == undefined || consultantReviews[1][i] == null || consultantReviews[1][i] == '' || consultantReviews[0][i] == 0){
+            break;
+          }else{
+            console.log("review: " + i + " (1) " + consultantReviews[0][i] + " (2) " + web3.toAscii(consultantReviews[1][i]) );
+            var display_content = "review: " + i + " (1) " + consultantReviews[0][i] + " (2) " + web3.toAscii(consultantReviews[1][i]) + "<br />";
+            // $('#consultantReviewsContent').attr('data-info', display_content);
+            $('#consultantReviewsContent').append(display_content);
+          }
+        }
+
+     });
+
+     $('#getConsultantsReviews').click(function(){
+        alert("consultants reviews");
+        var consultantsReviews = Client.getConsultantsReviews(ConsultantReviewContractAddress, {gas: 4712388});
+        console.log(consultantsReviews[0].length);
+        for(var i=0; i<20; i++){
+          if (consultantsReviews[1][i] == undefined || consultantsReviews[1][i] == null || consultantsReviews[1][i] == '' || consultantsReviews[0][i] == 0){
+            break;
+          }else{
+            console.log("review: " + i + " (1) " + consultantsReviews[0][i] + " (2) " + web3.toAscii(consultantsReviews[1][i]) );
+            var display_content = "review: " + i + " (1) " + consultantsReviews[0][i] + " (2) " + web3.toAscii(consultantsReviews[1][i]) + "  address: " + consultantsReviews[2][i] + "<br />";
+            // $('#consultantReviewsContent').attr('data-info', display_content);
+            $('#consultantsReviewsContent').append(display_content);
+          }
+        }
+
+     });     
 
     ClientEvent.watch(function(error, result) {
                if (!error) {
@@ -227,13 +280,18 @@
                }
            });
 
-       $("#setClientButton").click(function() {
-            $("#loader").show();
-            console.log("going to set the client on bc" + $("#firstName").val().toString() + "   "+ $("#lastName").val().toString() + "   " + $("#company").val().toString());
+    ClientAlreadyExistsEvent.watch(function(error, result) {
 
-           Client.setClient($("#firstName").val().toString(),$("#lastName").val(),$("#company").val(), {gas: 200000});
-           console.log("function is been called already");
-       });
+         if (!error) {
+            console.log("No Error called, blockHash: " + result.blockHash);
+             $("#loader").hide();
+             $("#instructor").html(result.blockHash);
+         } else {
+          console.log("error called");
+              $("#loader").hide();
+              $("#instructor").html(error);
+         }
+     });
 
 
 
@@ -249,115 +307,3 @@
 
 
 </html>
-
-<!-- 
-
-//     Client.setClient(web3.eth.accounts[7],"Blue","Box", "Blue Box LLC"),function(err,result){
-//     if(!err){
-//         console.log(result)
-//     }
-// };
-
-  // Client.setClient(web3.eth.accounts[7],"Blue","Box", "Blue Box LLC").then(function(v) {console.log(v)});
-
-  //   Client.getClients().then(function (result) {
-  //     console.log(result);
-  // });
-
-  // Client.getClients.call(function (err, res) {
-
-  //   if(!err){
-  //     console.log("array: o:  "+res);
-  //   }
-  // });
-
-  // Client.call.getClients();
-
-
-// Client.getClient(web3.eth.accounts[7]).call(function (err, res) {
-
-//     if(!err){
-//       console.log("get client:  "+res);
-//     }
-//   });
-
-
-
-  // Client.setClient(web3.eth.accounts[7],"Blue","Box", "Blue Box LLC").call(function (err, res) {
-
-  //   if(!err){
-  //     console.log(res);
-  //   }
-  // }); 
-
-// //  ************
-//   var result = Client.setClient(web3.eth.accounts[7],"Namrah","Waheed", "Blue Box LLC", {gas: 200000});
-
-//   console.log("The result is: " + result);
-
-//   console.log(Client.getClient(web3.eth.accounts[7]));
-
-//   var consultantReviewByClientResult = Client.setConsultantReview("0x745e434d2e55a702ea3e181a83f7e27611c557cf",20,"nomi",web3.eth.accounts[3], {gas: 200000});
-
-//   console.log("consultantReviewContractAddress: " + consultantReviewByClientResult);
-
-//   console.log(Client.getConsultantReview('0x745e434d2e55a702ea3e181a83f7e27611c557cf'));
-  //ClientContract.deployed().then(function(contractInstance) { contractInstance.getConsultantReview('0x745e434d2e55a702ea3e181a83f7e27611c557cf').then(function(v) {console.log(v)})})
-
-// going to give review
-
-// ClientContract.deployed().then(function(contractInstance) { contractInstance.setConsultantReview('0x6ed0dc7405602c58b174d6b508f48c42ed774f12',20,"meow",web3.eth.accounts[3]).then(function(v) {console.log(v)})})
-
-//   ***********
-  
-  // ClientContract.deployed().then(function(contractInstance) { contractInstance.getClient(web3.eth.accounts[7]).then(function(v) {console.log(v)})})
-
-//   Client.clientExist.call( ('jhjhj', result) => {
-//   if (!error) {
-//     console.log(result);
-//     // console.log(result.dna);
-//   }
-// }); // transaction object not needed
-
-
-// window.addEventListener('load', async () => {
-//     // Modern dapp browsers...
-//     if (window.ethereum) {
-//         // window.web3 = new Web3(ethereum); // I am not sure how this works
-//         window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-//         try {
-//             // Request account access if needed
-//             await ethereum.enable();
-//             console.log("try modern dapp initialize");
-//             web3.personal.unlockAccount(web3.eth.coinbase);
-//             web3.eth.defaultAccount = web3.eth.coinbase; // setting up default account
-
-//             console.log("default account: " + web3.eth.defaultAccount);
-//             var ClientContract = web3.eth.contract(ClientABI);
-//             var Client = ClientContract.at(ClientContractAddress);
-//             ClientContract.eth.defaultAccount = web3.eth.coinbase;
-//             web3.personal.unlockAccount(ClientContract.eth.defaultAccount);
-//             // console.dir("Client: " + JSON.stringify(Client));
-//             console.dir(Client);
-
-//             // Acccounts now exposed
-//             // web3.eth.sendTransaction({/* ... */});
-//         } catch (error) {
-//             // User denied account access...
-//             console.log("catch modern error" + error);
-//         }
-//     }
-//     // Legacy dapp browsers...
-//     else if (window.web3) {
-//         // window.web3 = new Web3(web3.currentProvider);
-//        web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));       
-//         console.log("Legacy dapp browser");
-//         // Acccounts always exposed
-//         // web3.eth.sendTransaction({/* ... */});
-//     }
-//     // Non-dapp browsers...
-//     else {
-//         console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
-//     }
-// });
- -->
