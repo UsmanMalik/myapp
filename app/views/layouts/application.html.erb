@@ -75,18 +75,14 @@
 
         <label for="name" class="col-lg-2 control-label">Company Name</label>
         <input id="company" type="text">
-
-        <label for="name" class="col-lg-2 control-label">Address</label>
-        <input id="address" type="text">
-
         
 
-        <button id="setClientButton">Update Instructor</button>
+        <button id="setClientButton">Add Client</button>
 
     </div>
 
     
-    <button id="bitto">Click</button>
+    <!-- <button id="bitto">Click</button> -->
 
 
     <div>
@@ -160,9 +156,9 @@
 
 
    // Contract and account addresses & probably make them constant
-   var ClientContractAddress = '0x0fcd08e63d4bdfaa2355a7892af0d8d74d8a4970';
+   var ClientContractAddress = '0x6b3c4565f90efbdd8a06ec2f13982fa8c32f94fe';
    var ConsultantContractAddress = "0x10675c9d40238d4b4fb0b32582bb77b41b0ab8ef"; 
-   var ConsultantReviewContractAddress = "0xcf4f5a678a1fcdd92e332d66661f1deafad4d34f";
+   var ConsultantReviewContractAddress = "0x5e48aab8a867a8250bb41506069896707336febd";
    var ClientReviewContractAddress = "0x38563ac0aabb090b306d9db879c4df7317fa98a8";
 
    var ClientABI = [{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"clientAccounts","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"firstName","type":"string"},{"indexed":false,"name":"lastName","type":"string"},{"indexed":false,"name":"company","type":"string"},{"indexed":false,"name":"account","type":"address"}],"name":"ClientEvent","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"message","type":"string"}],"name":"ClientAlreadyExistsEvent","type":"event"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"clientExist","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"clientDoesNotExist","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_firstName","type":"string"},{"name":"_lastName","type":"string"},{"name":"_company","type":"string"}],"name":"setClient","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getClients","outputs":[{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getClient","outputs":[{"name":"","type":"string"},{"name":"","type":"string"},{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"countClients","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_contractAddr","type":"address"},{"name":"_rating","type":"uint256"},{"name":"_comment","type":"bytes32"},{"name":"_consultantAccount","type":"address"}],"name":"setConsultantReview","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"}],"name":"getConsultantReview","outputs":[{"name":"","type":"uint256"},{"name":"","type":"bytes32"},{"name":"","type":"address"},{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"}],"name":"getConsultantsReviews","outputs":[{"name":"","type":"uint256[]"},{"name":"","type":"bytes32[20]"},{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"},{"name":"_consultantAccount","type":"address"}],"name":"getConsultantReviews","outputs":[{"name":"","type":"uint256[]"},{"name":"","type":"bytes32[20]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_contractAddr","type":"address"}],"name":"getClientFirstReview","outputs":[{"name":"","type":"uint256"},{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"}];
@@ -274,7 +270,7 @@
     ClientEvent.watch(function(error, result) {
                if (!error) {
                    $("#loader").hide();
-                   $("#instructor").html(result.args.firstName + ' (' + result.args.lastName + ' years old)');
+                   $("#instructor").html(result.args.firstName + ' ' + result.args.lastName);
                } else {
                     $("#loader").hide();
                }
